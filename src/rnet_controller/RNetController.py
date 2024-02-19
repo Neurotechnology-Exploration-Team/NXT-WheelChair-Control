@@ -154,10 +154,10 @@ class RNetController:
             logging.error(f"Error sending CAN frame {command_string}")
             return False
 
-    def drive_forward_seconds(self, can_socket, seconds):
+    def drive_forward_seconds(self, seconds):
         start_time = time()
         stop_time = start_time + seconds
-        self.set_speed_range(can_socket, 10)
+        self.set_speed_range(10)
 
         forward_frame = '02000000#' + dec2hex(0, 2) + dec2hex(60, 2)
         while time() < stop_time:
