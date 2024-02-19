@@ -3,8 +3,18 @@ import socket
 import struct
 import binascii
 
+from time import time
+
 # TODO Need to add function to send exploit?
 
+def dec2hex(dec,hexlen):  #convert dec to hex with leading 0s and no '0x'
+    h=hex(int(dec))[2:]
+    l=len(h)
+    if h[l-1]=="L":
+        l-=1  #strip the 'L' that python int sticks on
+    if h[l-2]=="x":
+        h= '0'+hex(int(dec))[1:]
+    return ('0'*hexlen+h)[l:l+hexlen]
 
 class RNetController:
     """
@@ -25,6 +35,7 @@ class RNetController:
         """
         try:
             self.can_socket = self._open_connection(bus_num)
+
         except socket.error:
             self.can_socket = None
 
@@ -142,6 +153,20 @@ class RNetController:
         except socket.error:
             logging.error(f"Error sending CAN frame {command_string}")
             return False
+
+    def drive_forward_seconds(self, can_socket, seconds):
+        start_time = time()
+        stop_time = start_time + seconds
+        self.set_speed_range(can_socket, 10)
+
+        forward_frame = '02000000#' + dec2hex(0, 2) + dec2hex(60, 2)
+        while time() < stop_time:
+            self._can_send(forward_frame)
+
+        stop_frame = '02000000#0000'
+
+        # Send the stop command
+        self._can_send(stop_frame)
 
     def set_speed_range(self, speed_range) -> bool:
         """
