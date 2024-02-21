@@ -5,16 +5,6 @@ import binascii
 
 from time import time
 
-# TODO Need to add function to send exploit?
-
-def dec2hex(dec,hexlen):  #convert dec to hex with leading 0s and no '0x'
-    h=hex(int(dec))[2:]
-    l=len(h)
-    if h[l-1]=="L":
-        l-=1  #strip the 'L' that python int sticks on
-    if h[l-2]=="x":
-        h= '0'+hex(int(dec))[1:]
-    return ('0'*hexlen+h)[l:l+hexlen]
 
 class RNetController:
     """
@@ -27,6 +17,12 @@ class RNetController:
         - Written with reference to the can2RNET project licensed under GPL:
             Python canbus functions for R-net exploration by Specter and RedDragonX
     """
+    MAX_POSITIVE = 100
+    """ Max value to go forward or right """
+
+    MAX_NEGATIVE = 400
+    """ Max value to go back or left """
+
     def __init__(self, bus_num: int = 0):
         """
         Constructor for a controller, connects to the given bus number
@@ -128,7 +124,7 @@ class RNetController:
         h = hex(int(decimal_num))[2:]
         l = len(h)
         if h[l - 1] == "L":
-            l -= 1  # strip the 'L' that python int sticks on
+            l -= 1
         if h[l - 2] == "x":
             h = "0" + hex(int(decimal_num))[1:]
         return ("0" * hex_len + h)[l:l + hex_len]
@@ -154,19 +150,55 @@ class RNetController:
             logging.error(f"Error sending CAN frame {command_string}")
             return False
 
-    def drive_forward_seconds(self, seconds):
+    def _drive_seconds(self, seconds, x, y) -> None:
+        """
+        Function to drive the chair for a given number of seconds in a certain direction
+
+        @param seconds: Number of seconds to continue in a given direction for
+        @param x: Amount to aim in x
+        @param y: Amount to aim in y
+        """
         start_time = time()
         stop_time = start_time + seconds
-        self.set_speed_range(10)
 
-        forward_frame = '02000000#' + dec2hex(0, 2) + dec2hex(60, 2)
+        forward_frame = '02000000#' + self._dec2hex(x, 2) + self._dec2hex(y, 2)
         while time() < stop_time:
             self._can_send(forward_frame)
 
-        stop_frame = '02000000#0000'
-
         # Send the stop command
-        self._can_send(stop_frame)
+        self.stop_chair()
+
+    def drive_forward_seconds(self, seconds) -> None:
+        """
+        Drive max forward
+
+        @param seconds: Time to drive for
+        """
+        self._drive_seconds(seconds, 0, self.MAX_POSITIVE)
+
+    def drive_back_seconds(self, seconds) -> None:
+        """
+        Drive max back
+
+        @param seconds: Time to drive for
+        """
+        self._drive_seconds(seconds, 0, self.MAX_NEGATIVE)
+
+    def drive_left_seconds(self, seconds) -> None:
+        """
+        Drive max left
+
+        @param seconds: Time to drive for
+        """
+        self._drive_seconds(seconds, self.MAX_NEGATIVE, 0)
+
+    def drive_right_seconds(self, seconds) -> None:
+        """
+        Drive max right
+
+        @param seconds: Time to drive for
+        """
+        self._drive_seconds(seconds, self.MAX_POSITIVE, 0)
 
     def set_speed_range(self, speed_range) -> bool:
         """
@@ -182,36 +214,6 @@ class RNetController:
         else:
             logging.error(f"Invalid RNET SpeedRange: {speed_range}")
             return False
-
-    def move_forward(self):
-        """
-        Move the chair forward
-        """
-        # Create forward frame
-        forward_frame = '02000000#' + self._dec2hex(0, 2) + self._dec2hex(60, 2)
-
-        # Send can frame
-        self._can_send(forward_frame)
-
-    def turn_left(self):
-        """
-        Turn the chair left
-        """
-        # TODO specify amount chair turns
-        # TODO verify if this works
-        left_frame = '02000000#' + self._dec2hex(400, 2) + self._dec2hex(0, 2)
-
-        self._can_send(left_frame)
-
-    def turn_right(self):
-        """
-        Turn the chair right
-        """
-        # TODO specify amount chair turns
-        # TODO verify this as well
-        right_frame = '02000000#' + self._dec2hex(200, 2) + self._dec2hex(0, 2)
-
-        self._can_send(right_frame)
 
     def stop_chair(self):
         """
