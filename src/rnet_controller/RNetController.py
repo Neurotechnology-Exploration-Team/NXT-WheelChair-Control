@@ -23,6 +23,21 @@ class RNetController:
     MAX_NEGATIVE = 400
     """ Max value to go back or left """
 
+    DRIVE_FRAME_START = "02000000#"
+    """ Start of the drive instruction frame """
+
+    STOP_FRAME = f"{DRIVE_FRAME_START}0000"
+    """ The whole of the stop frame """
+
+    SPEED_FRAME_START = "0a040100#"
+    """ Start of speed change instruction frame """
+
+    MIN_SPEED = 0x00
+    """ Minimum speed of the chair """
+
+    MAX_SPEED = 0x64
+    """ Maximum speed of the chair """
+
     def __init__(self, bus_num: int = 0):
         """
         Constructor for a controller, connects to the given bus number
@@ -161,7 +176,7 @@ class RNetController:
         start_time = time()
         stop_time = start_time + seconds
 
-        forward_frame = '02000000#' + self._dec2hex(x, 2) + self._dec2hex(y, 2)
+        forward_frame = self.DRIVE_FRAME_START + self._dec2hex(x, 2) + self._dec2hex(y, 2)
         while time() < stop_time:
             self._can_send(forward_frame)
 
@@ -207,9 +222,8 @@ class RNetController:
         @param speed_range: Speed range to set (between 0 and 100)
         @return: Whether the speed was successfully set
         """
-        if 0x00 <= speed_range <= 0x64:
-            # TODO all IDs like the following should be set as constants once rather than hardcoded
-            self._can_send("0a040100#" + self._dec2hex(speed_range, 2))
+        if self.MIN_SPEED <= speed_range <= self.MAX_SPEED:
+            self._can_send(self.SPEED_FRAME_START + self._dec2hex(speed_range, 2))
             return True
         else:
             logging.error(f"Invalid RNET SpeedRange: {speed_range}")
@@ -219,8 +233,5 @@ class RNetController:
         """
         Stop the chair's movement
         """
-        # Create Stop frame
-        stop_frame = '02000000#0000'
-
         # Send the stop command
-        self._can_send(stop_frame)
+        self._can_send(self.STOP_FRAME)
