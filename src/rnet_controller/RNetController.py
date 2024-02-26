@@ -45,10 +45,10 @@ class RNetController:
         @param bus_num: Bus number to connect to
         """
         try:
-            self.can_socket = self._open_connection(bus_num)
+            self._can_socket = self._open_connection(bus_num)
 
         except socket.error:
-            self.can_socket = None
+            self._can_socket = None
 
     @staticmethod
     def _open_connection(bus_num: int) -> socket.socket:
@@ -128,7 +128,7 @@ class RNetController:
         return can_id + struct.pack("B", can_dlc & 0xF) + b"\x00\x00\x00" + can_data
 
     @staticmethod
-    def _dec2hex(decimal_num, hex_len):
+    def _dec2hex(decimal_num: int, hex_len: int) -> str:
         """
         Convert dec to hex with leading 0s and no '0x'
 
@@ -151,21 +151,21 @@ class RNetController:
         @param command_string: String to build into a command and send
         @return: If the command was sent successfully
         """
-        if self.can_socket is None:
+        if self._can_socket is None:
             logging.error("Cannot send command as no canbus socket is open")
             return False
 
         try:
             out = self._build_frame(command_string)
 
-            self.can_socket.send(out)
+            self._can_socket.send(out)
             return True
 
         except socket.error:
             logging.error(f"Error sending CAN frame {command_string}")
             return False
 
-    def _drive_seconds(self, seconds, x, y) -> None:
+    def _drive_seconds(self, seconds: int, x: int, y: int) -> None:
         """
         Function to drive the chair for a given number of seconds in a certain direction
 
@@ -183,7 +183,7 @@ class RNetController:
         # Send the stop command
         self.stop_chair()
 
-    def drive_forward_seconds(self, seconds) -> None:
+    def drive_forward_seconds(self, seconds: int) -> None:
         """
         Drive max forward
 
@@ -191,7 +191,7 @@ class RNetController:
         """
         self._drive_seconds(seconds, 0, self.MAX_POSITIVE)
 
-    def drive_back_seconds(self, seconds) -> None:
+    def drive_back_seconds(self, seconds: int) -> None:
         """
         Drive max back
 
@@ -199,7 +199,7 @@ class RNetController:
         """
         self._drive_seconds(seconds, 0, self.MAX_NEGATIVE)
 
-    def drive_left_seconds(self, seconds) -> None:
+    def drive_left_seconds(self, seconds: int) -> None:
         """
         Drive max left
 
@@ -207,7 +207,7 @@ class RNetController:
         """
         self._drive_seconds(seconds, self.MAX_NEGATIVE, 0)
 
-    def drive_right_seconds(self, seconds) -> None:
+    def drive_right_seconds(self, seconds: int) -> None:
         """
         Drive max right
 
@@ -215,7 +215,7 @@ class RNetController:
         """
         self._drive_seconds(seconds, self.MAX_POSITIVE, 0)
 
-    def set_speed_range(self, speed_range) -> bool:
+    def set_speed_range(self, speed_range: int) -> bool:
         """
         Set the speed of the chair
 
@@ -229,9 +229,15 @@ class RNetController:
             logging.error(f"Invalid RNET SpeedRange: {speed_range}")
             return False
 
-    def stop_chair(self):
+    def stop_chair(self) -> None:
         """
         Stop the chair's movement
         """
         # Send the stop command
         self._can_send(self.STOP_FRAME)
+
+    def close(self) -> None:
+        """
+        Close the connection to the chair
+        """
+        self._can_socket.close()
