@@ -199,17 +199,17 @@ class RNetController:
         """
         self._drive_seconds(seconds, 0, self.MAX_NEGATIVE)
 
-    def drive_left_seconds(self, seconds: int) -> None:
+    def turn_left_seconds(self, seconds: int) -> None:
         """
-        Drive max left
+        Turn max left
 
         @param seconds: Time to drive for
         """
         self._drive_seconds(seconds, self.MAX_NEGATIVE, 0)
 
-    def drive_right_seconds(self, seconds: int) -> None:
+    def turn_right_seconds(self, seconds: int) -> None:
         """
-        Drive max right
+        Turn max right
 
         @param seconds: Time to drive for
         """
