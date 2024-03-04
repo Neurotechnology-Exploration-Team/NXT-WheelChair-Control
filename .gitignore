@@ -1,8 +1,2 @@
-nxtENV
-a.txt
-.idea/misc.xml
-.idea/modules.xml
-.idea/NXT-WheelChair.iml
-.idea/vcs.xml
-.idea/inspectionProfiles/profiles_settings.xml
-.vscode/launch.json
+.idea/
+venv/
