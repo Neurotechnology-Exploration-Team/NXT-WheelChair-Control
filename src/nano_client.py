@@ -25,12 +25,12 @@ def main():
     """
     Main function responsible for sending the move commands to the wheelchair
     """
-    serial_device = serial.Serial(DEVICE, BAUD_RATE, timeout=1)
-    while True:
-        # TODO Placeholder
-        # Example moves forward for 4 seconds
-        command = [0xfe, 0x01, 0x04, 0x03, 0xff]
-        send_command(command, serial_device)
+    with serial.Serial(DEVICE, BAUD_RATE, timeout=1) as serial_device:
+        while True:
+            # TODO Placeholder
+            # Example moves forward for 4 seconds
+            command = [0xfe, 0x01, 0x04, 0x03, 0xff]
+            send_command(command, serial_device)
 
 
 if __name__ == "__main__":
