@@ -19,3 +19,37 @@ Since commands only need to be sent from the Nano to the Pi, we only need two wi
 |----------------|--------------|
 | GND            | GND          |
 | TXD0 (GPIO 14) | RX (GPIO 15) |
+
+## Protocol Specification
+This protocol needs to send direction input over the wire
+
+**Transmission:**
+
+| Byte # | Content                | Hex       | Description               |
+|--------|------------------------|-----------|---------------------------|
+| 1      | STX                    | 0xfe      | Start byte                |
+| 2      | Direction              | 0x01-0x04 | Direction to go           |
+| 3      | Duration mantissa (ms) | 0x01-0xfd | Mantissa of move duration |
+| 4      | Duration exponent (ms) | 0x00-0xfd | Exponent of move duration |
+| 5      | ETX                    | 0xff      | End byte                  |
+
+**Directions:**
+
+| Hex  | Direction |
+|------|-----------|
+| 0x01 | Forwards  |
+| 0x02 | Backwards |
+| 0x03 | Left      |
+| 0x04 | Right     |
+
+## Example transmissions
+Examples of valid transmissions to command the chair
+### Move forwards for 4 seconds (4.0 * 10^3 ms)
+```
+0xfe 0x01 0x04 0x03 0xff
+```
+
+### Turn left for 0.2 seconds (2.0 * 10^2 ms)
+```
+0xfe 0x03 0x02 0x02 0xff
+```
