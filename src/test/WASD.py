@@ -1,9 +1,8 @@
 import sys
 
 import keyboard
-import time
 
-from ..rnet_controller.RNetController import RNetController
+from src.wheelchair_interface.rnet_controller import RNetController
 
 
 DRIVE_TIME = 1
