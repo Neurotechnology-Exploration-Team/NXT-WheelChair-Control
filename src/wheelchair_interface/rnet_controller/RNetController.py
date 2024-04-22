@@ -5,6 +5,7 @@ import binascii
 
 from time import time
 
+from ..protocol.resources import Direction
 
 class RNetController:
     """
@@ -165,7 +166,7 @@ class RNetController:
             logging.error(f"Error sending CAN frame {command_string}")
             return False
 
-    def _drive_seconds(self, seconds: int, x: int, y: int) -> None:
+    def _drive_seconds(self, seconds: float, x: int, y: int) -> None:
         """
         Function to drive the chair for a given number of seconds in a certain direction
 
@@ -183,7 +184,31 @@ class RNetController:
         # Send the stop command
         self.stop_chair()
 
-    def drive_forward_seconds(self, seconds: int) -> None:
+    def drive_direction_seconds(self, direction: Direction, seconds: float) -> None:
+        """
+        Drive a direction for given timeframe
+
+        :param direction: Direction to move in
+        :param seconds: Time to move in that direction
+        """
+        if direction == Direction.FORWARD:
+            self.drive_forward_seconds(seconds)
+        elif direction == Direction.BACKWARD:
+            self.drive_back_seconds(seconds)
+        elif direction == Direction.LEFT:
+            self.turn_left_seconds(seconds)
+        elif direction == Direction.RIGHT:
+            self.turn_right_seconds(seconds)
+
+    def is_connected(self) -> bool:
+        """
+        Check if there is an established connection
+
+        :return: If there is a current connection established over can
+        """
+        return self._can_socket is not None
+
+    def drive_forward_seconds(self, seconds: float) -> None:
         """
         Drive max forward
 
@@ -191,7 +216,7 @@ class RNetController:
         """
         self._drive_seconds(seconds, 0, self.MAX_POSITIVE)
 
-    def drive_back_seconds(self, seconds: int) -> None:
+    def drive_back_seconds(self, seconds: float) -> None:
         """
         Drive max back
 
@@ -199,7 +224,7 @@ class RNetController:
         """
         self._drive_seconds(seconds, 0, self.MAX_NEGATIVE)
 
-    def turn_left_seconds(self, seconds: int) -> None:
+    def turn_left_seconds(self, seconds: float) -> None:
         """
         Turn max left
 
@@ -207,7 +232,7 @@ class RNetController:
         """
         self._drive_seconds(seconds, self.MAX_NEGATIVE, 0)
 
-    def turn_right_seconds(self, seconds: int) -> None:
+    def turn_right_seconds(self, seconds: float) -> None:
         """
         Turn max right
 
@@ -241,3 +266,4 @@ class RNetController:
         Close the connection to the chair
         """
         self._can_socket.close()
+        self._can_socket = None
