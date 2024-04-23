@@ -6,7 +6,7 @@ from ..rnet_controller.RNetController import RNetController
 from ..protocol.processor import decode_move_cmd, InvalidCmdException
 
 
-DEVICE = "/dev/ttyS0"
+DEVICE = "/dev/ttyAMA0"
 BAUD_RATE = 115200
 
 RECONNECTION_ATTEMPTS = 5
