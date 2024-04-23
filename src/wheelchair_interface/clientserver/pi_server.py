@@ -16,7 +16,6 @@ def process_command(controller: RNetController, command: bytearray) -> bool:
     :return: If it could be processed and ran successfully
     """
     try:
-        command.pop(-1)
         direction, duration = decode_move_cmd(command)
         controller.drive_direction_seconds(direction, duration)
         return True
@@ -68,7 +67,7 @@ def main():
     with serial.Serial(PI_DEVICE, BAUD_RATE) as serial_device:
         while True:
             # Grab the command
-            received_command = serial_device.readline().decode().strip()
+            received_command = serial_device.readline().strip()
 
             if received_command:
                 logging.info(f"Received command: {received_command}")
