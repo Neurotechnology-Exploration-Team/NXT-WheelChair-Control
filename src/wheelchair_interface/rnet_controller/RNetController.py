@@ -7,6 +7,7 @@ from time import time
 
 from ..protocol.resources import Direction
 
+
 class RNetController:
     """
     Class that will handle all communication to the can bus

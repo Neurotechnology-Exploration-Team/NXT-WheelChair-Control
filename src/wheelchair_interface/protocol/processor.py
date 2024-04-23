@@ -1,3 +1,4 @@
+import logging
 import math
 
 from .resources import *
@@ -105,6 +106,8 @@ def encode_move_cmd(direction: Direction, duration: float) -> bytearray:
     # Set end
     cmd[-1] = ETX
 
+    logging.debug(f"Encoded command as {cmd}")
+
     # Return the result converted to a byte array
     return bytearray(cmd)
 
@@ -131,4 +134,6 @@ def decode_move_cmd(raw_cmd: bytearray) -> tuple[Direction, float]:
     duration = decode_time(mantissa, exponent)
 
     # Now we can return
+    logging.debug(f"Decoded command as ({direction}, {duration})")
+
     return direction, duration
