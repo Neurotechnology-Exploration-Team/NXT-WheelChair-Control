@@ -69,7 +69,7 @@ def main():
     thread.daemon = True
     thread.start()
 
-    with serial.Serial(DEVICE, BAUD_RATE, timeout=1) as serial_device:
+    with serial.Serial(DEVICE, BAUD_RATE) as serial_device:
         while True:
             # Grab the command
             received_command = serial_device.readline().decode().strip()
