@@ -33,6 +33,7 @@ def process_data(data: bytes, serial_device: serial.Serial) -> None:
     direction, duration = pickle.loads(data)
     logging.info(f"Received data: {data}")
     cmd = encode_move_cmd(direction, duration)
+    cmd.append(ord('\n'))
     logging.info(f"Sending command: {cmd}...")
     send_command(cmd, serial_device)
 

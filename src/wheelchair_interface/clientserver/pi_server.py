@@ -7,8 +7,6 @@ from ..protocol.processor import decode_move_cmd, InvalidCmdException
 from ..protocol.resources import *
 
 
-
-
 def process_command(controller: RNetController, command: bytearray) -> bool:
     """
     This will decide what needs to be run and send it to the correct function to send to the chair
@@ -18,6 +16,7 @@ def process_command(controller: RNetController, command: bytearray) -> bool:
     :return: If it could be processed and ran successfully
     """
     try:
+        command.pop(-1)
         direction, duration = decode_move_cmd(command)
         controller.drive_direction_seconds(direction, duration)
         return True
