@@ -57,7 +57,7 @@ def main():
             logging.error("Failed to connect to wheelchair")
 
     # Ensure successful connection
-    if rnet_controller is None:
+    if not rnet_controller.is_connected():
         logging.error(f"Failed to connect after {RECONNECTION_ATTEMPTS}. Exiting..")
         return
 
