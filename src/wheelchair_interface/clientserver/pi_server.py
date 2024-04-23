@@ -55,7 +55,7 @@ def main():
     # Ensure successful connection
     if not rnet_controller.is_connected():
         logging.error(f"Failed to connect after {RECONNECTION_ATTEMPTS} attempts. Exiting..")
-        return
+        #return
 
     # Create a queue to store commands
     command_queue = queue.Queue()
