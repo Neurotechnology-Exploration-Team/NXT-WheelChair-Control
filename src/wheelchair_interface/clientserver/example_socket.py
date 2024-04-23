@@ -17,7 +17,7 @@ def send_move_cmd(direction: Direction, duration: float, host=SOCKET_HOST, port=
         client_socket.connect((host, port))
 
         # Encode it into data
-        data = pickle.dumps((direction, duration))
+        data = pickle.dumps((int(direction), duration))
 
         # Send over the socket
         client_socket.sendall(data)
