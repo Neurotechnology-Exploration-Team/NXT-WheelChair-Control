@@ -4,12 +4,9 @@ import logging
 import queue
 from ..rnet_controller.RNetController import RNetController
 from ..protocol.processor import decode_move_cmd, InvalidCmdException
+from ..protocol.resources import *
 
 
-DEVICE = "/dev/ttyAMA0"
-BAUD_RATE = 115200
-
-RECONNECTION_ATTEMPTS = 5
 
 
 def process_command(controller: RNetController, command: bytearray) -> bool:
@@ -69,7 +66,7 @@ def main():
     thread.daemon = True
     thread.start()
 
-    with serial.Serial(DEVICE, BAUD_RATE) as serial_device:
+    with serial.Serial(PI_DEVICE, BAUD_RATE) as serial_device:
         while True:
             # Grab the command
             received_command = serial_device.readline().decode().strip()
