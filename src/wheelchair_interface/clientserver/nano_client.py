@@ -1,7 +1,9 @@
 """
 file: nano_client.py
 
-description: This program will take movement commands and send them over uart to the pi
+description: This program is a socket server and uart client which translates socket commands to UART
+
+author: Matt London
 """
 import serial
 import socket

@@ -1,3 +1,11 @@
+"""
+file: pi_server.py
+
+description: A server which accepts commands over UART and sends them through the PiCan to the wheelchair
+
+author: Matt London
+"""
+
 import serial
 import threading
 import logging

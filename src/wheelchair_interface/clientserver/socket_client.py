@@ -1,3 +1,11 @@
+"""
+file: socket_client.py
+
+description: An implementation of a function to send move commands over socket
+
+author: Matt London
+"""
+import logging
 import socket
 import pickle
 
@@ -23,10 +31,5 @@ def send_move_cmd(direction: Direction, duration: float, host=SOCKET_HOST, port=
         client_socket.sendall(data)
 
 
-def main():
-    # Test send move forward for 1 second
-    send_move_cmd(Direction.FORWARD, 1)
-
-
 if __name__ == "__main__":
-    main()
+    logging.error("Should not be run directly. Import its functionality.")

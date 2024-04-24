@@ -1,5 +1,11 @@
+"""
+file: processor.py
+
+description: Implementation of encoders and decoders for the protocol
+
+author: Matt London
+"""
 import logging
-import math
 
 from .resources import *
 
@@ -22,7 +28,7 @@ class InvalidCmdException(Exception):
         super(InvalidCmdException, self).__init__(message)
 
 
-def encode_time(seconds: float) -> tuple[int, int]:
+def __encode_time(seconds: float) -> tuple[int, int]:
     """
     Take a value of seconds and encode it to the mantissa, exponent form
 
@@ -47,7 +53,7 @@ def encode_time(seconds: float) -> tuple[int, int]:
     return mantissa, exponent
 
 
-def decode_time(mantissa: int, exponent: int) -> float:
+def __decode_time(mantissa: int, exponent: int) -> float:
     """
     Take value of mantissa and exponent and convert it to seconds
 
@@ -61,7 +67,7 @@ def decode_time(mantissa: int, exponent: int) -> float:
     return seconds
 
 
-def is_valid_cmd(raw_cmd: bytearray) -> bool:
+def __is_valid_cmd(raw_cmd: bytearray) -> bool:
     """
     Make sure a raw command appears to follow the protocol
 
@@ -99,7 +105,7 @@ def encode_move_cmd(direction: Direction, duration: float) -> bytearray:
     cmd[1] = int(direction)
 
     # Encode time
-    mantissa, exponent = encode_time(duration)
+    mantissa, exponent = __encode_time(duration)
     cmd[2] = mantissa
     cmd[3] = exponent
 
@@ -120,7 +126,7 @@ def decode_move_cmd(raw_cmd: bytearray) -> tuple[Direction, float]:
     :return: (Direction, duration in seconds)
     """
     # Make sure it is valid
-    if not is_valid_cmd(raw_cmd):
+    if not __is_valid_cmd(raw_cmd):
         raise InvalidCmdException("Command received does not match protocol")
 
     cmd = list(raw_cmd)
@@ -131,9 +137,13 @@ def decode_move_cmd(raw_cmd: bytearray) -> tuple[Direction, float]:
     # Convert the time
     mantissa = cmd[2]
     exponent = cmd[3]
-    duration = decode_time(mantissa, exponent)
+    duration = __decode_time(mantissa, exponent)
 
     # Now we can return
     logging.debug(f"Decoded command as ({direction}, {duration})")
 
     return direction, duration
+
+
+if __name__ == "__main__":
+    logging.error("Should not be run directly. Import its functionality.")
