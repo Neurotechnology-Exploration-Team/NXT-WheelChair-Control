@@ -9,7 +9,6 @@ This communication protocol will be passed over UART.
 | Setting | Configuration |
 |---------|---------------|
 | Speed   | 115200        |
-|         |               |
 
 
 ## Wiring
