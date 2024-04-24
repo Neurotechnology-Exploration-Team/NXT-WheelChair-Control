@@ -1,3 +1,16 @@
+"""
+file: RNetController.py
+
+description: File that handles low-level communication to the wheelchair over Can
+
+author: Matt London
+
+note:
+    - Written with reference to the can2RNET project licensed under GPL:
+        - Python canbus functions for R-net exploration by Specter and RedDragonX
+        - https://github.com/redragonx/can2RNET
+"""
+
 import logging
 import socket
 import struct
@@ -5,17 +18,12 @@ import binascii
 
 from time import time
 
+from ..protocol.resources import Direction
+
 
 class RNetController:
     """
     Class that will handle all communication to the can bus
-
-    Authors:
-        - Matt London
-
-    Notes:
-        - Written with reference to the can2RNET project licensed under GPL:
-            Python canbus functions for R-net exploration by Specter and RedDragonX
     """
     MAX_POSITIVE = 100
     """ Max value to go forward or right """
@@ -42,7 +50,7 @@ class RNetController:
         """
         Constructor for a controller, connects to the given bus number
 
-        @param bus_num: Bus number to connect to
+        :param bus_num: Bus number to connect to
         """
         try:
             self._can_socket = self._open_connection(bus_num)
@@ -55,8 +63,8 @@ class RNetController:
         """
         Open a connection to the bus and return the socket
 
-        @param bus_num: Bus number to connect to (0 for the hat)
-        @return: A socket with an open connection to the bus
+        :param bus_num: Bus number to connect to (0 for the hat)
+        :return: A socket with an open connection to the bus
         """
         bus_num = str(bus_num)
 
@@ -94,8 +102,8 @@ class RNetController:
             <can_id>#{R|data}          for CAN 2.0 frames
             <can_id>##<flags>{data}    for CAN FD frames
 
-        @param can_string: Command string to build into a frame
-        @return:
+        :param can_string: Command string to build into a frame
+        :return:
         """
         if "#" not in can_string:
             logging.error("Cannot build command frame: missing #")
@@ -132,9 +140,9 @@ class RNetController:
         """
         Convert dec to hex with leading 0s and no '0x'
 
-        @param decimal_num: Decimal number to convert
-        @param hex_len: Number of hex digits you want final result to have (pads with 0)
-        @return: Hex string with no leading '0x'
+        :param decimal_num: Decimal number to convert
+        :param hex_len: Number of hex digits you want final result to have (pads with 0)
+        :return: Hex string with no leading '0x'
         """
         h = hex(int(decimal_num))[2:]
         l = len(h)
@@ -144,12 +152,12 @@ class RNetController:
             h = "0" + hex(int(decimal_num))[1:]
         return ("0" * hex_len + h)[l:l + hex_len]
 
-    def _can_send(self, command_string: str) -> bool:
+    def __can_send(self, command_string: str) -> bool:
         """
         Send a command to the opened socket
 
-        @param command_string: String to build into a command and send
-        @return: If the command was sent successfully
+        :param command_string: String to build into a command and send
+        :return: If the command was sent successfully
         """
         if self._can_socket is None:
             logging.error("Cannot send command as no canbus socket is open")
@@ -162,68 +170,92 @@ class RNetController:
             return True
 
         except socket.error:
-            logging.error(f"Error sending CAN frame {command_string}")
+            logging.debug(f"Error sending CAN frame {command_string}")
             return False
 
-    def _drive_seconds(self, seconds: int, x: int, y: int) -> None:
+    def __drive_seconds(self, seconds: float, x: int, y: int) -> None:
         """
         Function to drive the chair for a given number of seconds in a certain direction
 
-        @param seconds: Number of seconds to continue in a given direction for
-        @param x: Amount to aim in x
-        @param y: Amount to aim in y
+        :param seconds: Number of seconds to continue in a given direction for
+        :param x: Amount to aim in x
+        :param y: Amount to aim in y
         """
         start_time = time()
         stop_time = start_time + seconds
 
         forward_frame = self.DRIVE_FRAME_START + self._dec2hex(x, 2) + self._dec2hex(y, 2)
         while time() < stop_time:
-            self._can_send(forward_frame)
+            self.__can_send(forward_frame)
 
         # Send the stop command
         self.stop_chair()
 
-    def drive_forward_seconds(self, seconds: int) -> None:
+    def drive_direction_seconds(self, direction: Direction, seconds: float) -> None:
+        """
+        Drive a direction for given timeframe
+
+        :param direction: Direction to move in
+        :param seconds: Time to move in that direction
+        """
+        if direction == Direction.FORWARD:
+            self.drive_forward_seconds(seconds)
+        elif direction == Direction.BACKWARD:
+            self.drive_back_seconds(seconds)
+        elif direction == Direction.LEFT:
+            self.turn_left_seconds(seconds)
+        elif direction == Direction.RIGHT:
+            self.turn_right_seconds(seconds)
+
+    def is_connected(self) -> bool:
+        """
+        Check if there is an established connection
+
+        :return: If there is a current connection established over can
+        """
+        return self._can_socket is not None
+
+    def drive_forward_seconds(self, seconds: float) -> None:
         """
         Drive max forward
 
-        @param seconds: Time to drive for
+        :param seconds: Time to drive for
         """
-        self._drive_seconds(seconds, 0, self.MAX_POSITIVE)
+        self.__drive_seconds(seconds, 0, self.MAX_POSITIVE)
 
-    def drive_back_seconds(self, seconds: int) -> None:
+    def drive_back_seconds(self, seconds: float) -> None:
         """
         Drive max back
 
-        @param seconds: Time to drive for
+        :param seconds: Time to drive for
         """
-        self._drive_seconds(seconds, 0, self.MAX_NEGATIVE)
+        self.__drive_seconds(seconds, 0, self.MAX_NEGATIVE)
 
-    def turn_left_seconds(self, seconds: int) -> None:
+    def turn_left_seconds(self, seconds: float) -> None:
         """
         Turn max left
 
-        @param seconds: Time to drive for
+        :param seconds: Time to drive for
         """
-        self._drive_seconds(seconds, self.MAX_NEGATIVE, 0)
+        self.__drive_seconds(seconds, self.MAX_NEGATIVE, 0)
 
-    def turn_right_seconds(self, seconds: int) -> None:
+    def turn_right_seconds(self, seconds: float) -> None:
         """
         Turn max right
 
-        @param seconds: Time to drive for
+        :param seconds: Time to drive for
         """
-        self._drive_seconds(seconds, self.MAX_POSITIVE, 0)
+        self.__drive_seconds(seconds, self.MAX_POSITIVE, 0)
 
     def set_speed_range(self, speed_range: int) -> bool:
         """
         Set the speed of the chair
 
-        @param speed_range: Speed range to set (between 0 and 100)
-        @return: Whether the speed was successfully set
+        :param speed_range: Speed range to set (between 0 and 100)
+        :return: Whether the speed was successfully set
         """
         if self.MIN_SPEED <= speed_range <= self.MAX_SPEED:
-            self._can_send(self.SPEED_FRAME_START + self._dec2hex(speed_range, 2))
+            self.__can_send(self.SPEED_FRAME_START + self._dec2hex(speed_range, 2))
             return True
         else:
             logging.error(f"Invalid RNET SpeedRange: {speed_range}")
@@ -234,10 +266,11 @@ class RNetController:
         Stop the chair's movement
         """
         # Send the stop command
-        self._can_send(self.STOP_FRAME)
+        self.__can_send(self.STOP_FRAME)
 
     def close(self) -> None:
         """
         Close the connection to the chair
         """
         self._can_socket.close()
+        self._can_socket = None
