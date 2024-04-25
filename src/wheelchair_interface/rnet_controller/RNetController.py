@@ -173,6 +173,14 @@ class RNetController:
             logging.debug(f"Error sending CAN frame {command_string}")
             return False
 
+    def stop_seconds(self, seconds: float) -> None:
+        start_time = time()
+        stop_time = start_time + seconds
+
+        forward_frame = self.DRIVE_FRAME_START + self._dec2hex(x, 2) + self._dec2hex(y, 2)
+        while time() < stop_time:
+            self.stop_chair()
+
     def __drive_seconds(self, seconds: float, x: int, y: int) -> None:
         """
         Function to drive the chair for a given number of seconds in a certain direction
@@ -187,9 +195,6 @@ class RNetController:
         forward_frame = self.DRIVE_FRAME_START + self._dec2hex(x, 2) + self._dec2hex(y, 2)
         while time() < stop_time:
             self.__can_send(forward_frame)
-
-        # Send the stop command
-        self.stop_chair()
 
     def drive_direction_seconds(self, direction: Direction, seconds: float) -> None:
         """
@@ -206,6 +211,8 @@ class RNetController:
             self.turn_left_seconds(seconds)
         elif direction == Direction.RIGHT:
             self.turn_right_seconds(seconds)
+        elif direction == Direction.STOP:
+            self.stop_seconds(seconds)
 
     def is_connected(self) -> bool:
         """
