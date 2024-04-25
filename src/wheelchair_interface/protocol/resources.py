@@ -13,7 +13,8 @@ class Direction(IntEnum):
     FORWARD = 0x01,
     BACKWARD = 0x02,
     LEFT = 0x03,
-    RIGHT = 0x04
+    RIGHT = 0x04,
+    STOP = 0x05
 
 
 PROTOCOL_LENGTH = 5
