@@ -40,6 +40,7 @@ This protocol needs to send direction input over the wire
 | 0x02 | Backwards |
 | 0x03 | Left      |
 | 0x04 | Right     |
+| 0x05 | Stop      |
 
 ## Example transmissions
 Examples of valid transmissions to command the chair
