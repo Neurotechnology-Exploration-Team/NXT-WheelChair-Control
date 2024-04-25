@@ -33,11 +33,13 @@ The `protocol` class contains implementation functions of the protocol discussed
 - `resources.py`
   - Common constants used in different files
 
-### examples
-The `examples` package contains example implementations of RNetController aside from those in `clientserver`.
+### input_receivers
+The `input_receivers` package contains example implementations of RNetController or receivers to be run independent and speak to the client in `clientserver`.
 
+- `headtilt.py`
+  - Interfaces with a head accelerometer and leverages the functionality of `clientserver`
 - `WASD.py`
-  - Functionality for controlling the wheelchair using WASD keys
+  - Runs independently of `clientserver` and speaks directly to the RNetController.
 
 ### rnet_controller
 The `rnet_controller` package handles direct communication with the wheelchair through the can protocol.
