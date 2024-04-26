@@ -31,14 +31,6 @@ def send_move_cmd(direction: Direction, duration: float, host=SOCKET_HOST, port=
         client_socket.sendall(data)
 
 
-if __name__ == "__main__":
-    logging.error("Should not be run directly. Import its functionality.")
-
-
-
-
-
-
 
 def headTilt():
 	params = BrainFlowInputParams()
