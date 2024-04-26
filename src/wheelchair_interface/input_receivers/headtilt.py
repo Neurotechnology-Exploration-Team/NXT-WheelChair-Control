@@ -10,7 +10,7 @@ import pickle
 from wheelchair_interface.protocol.resources import *
 
 
-HEADTILT_MOVE_DURATION = 0.5
+HEADTILT_MOVE_DURATION = 0.25
 
 def send_move_cmd(direction: Direction, duration: float, host=SOCKET_HOST, port=SOCKET_PORT) -> None:
     """
