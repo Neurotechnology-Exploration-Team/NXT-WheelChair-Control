@@ -61,14 +61,14 @@ def headTilt():
 
 			if accel_y>=-.8:
 				print("FORWARD")
-				send_move_cmd(Direction.FORWARD, .25)
+				send_move_cmd(Direction.FORWARD, 1)
 			elif abs(accel_x)>.05:
 				if accel_x<-.05:
 					print('LEFT')
-					send_move_cmd(Direction.LEFT, .25)
+					send_move_cmd(Direction.LEFT, 1)
 				else:
 					print("RIGHT")
-					send_move_cmd(Direction.RIGHT, .25)
+					send_move_cmd(Direction.RIGHT, 1)
 			else:
 				print("REST")
 				#send_move_cmd(Direction., .5)

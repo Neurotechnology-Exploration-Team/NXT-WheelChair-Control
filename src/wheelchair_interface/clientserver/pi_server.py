@@ -44,13 +44,13 @@ def process_commands(controller: RNetController, command_queue: queue.Queue):
         if not command_queue.empty():
             command = command_queue.get()
             process_command(controller, command)
-            process_commands.current_command = command
+            # process_commands.current_command = command
             command_queue.task_done()
-        elif process_commands.current_command is not None:
-            process_command(controller, process_commands.current_command)
+        # elif process_commands.current_command is not None:
+        #     process_command(controller, process_commands.current_command)
 
 
-process_commands.current_command = None
+# process_commands.current_command = None
 
 
 def main():
