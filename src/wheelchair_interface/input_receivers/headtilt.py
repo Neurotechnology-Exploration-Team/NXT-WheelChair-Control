@@ -10,6 +10,8 @@ import pickle
 from wheelchair_interface.protocol.resources import *
 
 
+HEADTILT_MOVE_DURATION = 0.5
+
 def send_move_cmd(direction: Direction, duration: float, host=SOCKET_HOST, port=SOCKET_PORT) -> None:
     """
     Send a move command to the nano interface over socket
@@ -61,14 +63,14 @@ def headTilt():
 
 			if accel_y>=-.8:
 				print("FORWARD")
-				send_move_cmd(Direction.FORWARD, 1)
+				send_move_cmd(Direction.FORWARD, HEADTILT_MOVE_DURATION)
 			elif abs(accel_x)>.05:
 				if accel_x<-.05:
 					print('LEFT')
-					send_move_cmd(Direction.LEFT, 1)
+					send_move_cmd(Direction.LEFT, HEADTILT_MOVE_DURATION)
 				else:
 					print("RIGHT")
-					send_move_cmd(Direction.RIGHT, 1)
+					send_move_cmd(Direction.RIGHT, HEADTILT_MOVE_DURATION)
 			else:
 				print("REST")
 				#send_move_cmd(Direction., .5)
