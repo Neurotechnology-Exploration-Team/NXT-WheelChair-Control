@@ -1,6 +1,9 @@
 # NXT-WheelChair-Control
 A library for controlling wheelchairs with R-Net technology used in the NXT Wheelchair project. Library code is based on the code written by redragonx in https://github.com/redragonx/can2RNET and refactored into an object-oriented format.
 
+## Installation notes
+Brainflow is very confusing to install. Install it by building from source. Build instructions [here](https://brainflow.readthedocs.io/en/stable/BuildBrainFlow.html#compilation-label) and Python installation instructions [here](https://brainflow.readthedocs.io/en/stable/BuildBrainFlow.html). This worked installing on the Pi. It must be built from source because they don't offer binaries for arm64.
+
 ## Usage Instructions
 1. Connect a PiCan v2 Hat to a motorized wheelchair's can interface
 2. Follow Raspberry Pi socket setup [here](https://github.com/redragonx/can2RNET?tab=readme-ov-file#raspberry-pi-setup)
