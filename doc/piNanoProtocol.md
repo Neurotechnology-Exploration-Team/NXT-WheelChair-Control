@@ -27,7 +27,7 @@ This protocol needs to send direction input over the wire
 | Byte # | Content                | Hex       | Description               |
 |--------|------------------------|-----------|---------------------------|
 | 0      | STX                    | 0xfe      | Start byte                |
-| 1      | Direction              | 0x01-0x04 | Direction to go           |
+| 1      | Direction              | 0x01-0x05 | Direction to go           |
 | 2      | Duration mantissa (ms) | 0x01-0xfd | Mantissa of move duration |
 | 3      | Duration exponent (ms) | 0x00-0xfd | Exponent of move duration |
 | 4      | ETX                    | 0xff      | End byte                  |
